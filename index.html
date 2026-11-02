@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twin Cities - Business Directory</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-hover: #1d4ed8;
+      --accent: #d97706;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.5; }
+
+    nav {
+      background: #0f172a;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav .brand { font-weight: 800; font-size: 1.1rem; color: #f8fafc; }
+    nav .nav-links { display: flex; gap: 1rem; }
+    nav a { color: #cbd5e1; text-decoration: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+
+    header {
+      background: url('https://upload.wikimedia.org/wikipedia/commons/b/b7/Rogers%2C_AR_001.jpg') center/cover no-repeat;
+      color: #ffffff;
+      padding: 4rem 1rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+    }
+
+    header p {
+      color: #ffffff;
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+    }
+
+    .upgrade-banner {
+      max-width: 1200px;
+      margin: 1.5rem auto -0.5rem auto;
+      padding: 0 1rem;
+    }
+    .banner-content {
+      background: #fffbeb;
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .banner-text h3 { color: #92400e; font-size: 1.1rem; margin-bottom: 0.25rem; }
+    .banner-text p { color: #78350f; font-size: 0.9rem; }
+    .badge-urgent { background-color: #dc2626; color: white; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; }
+    .btn-upgrade { background-color: #d97706; color: white; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; }
+
+    .controls-container {
+      max-width: 1200px;
+      margin: 2rem auto 1rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background-color: white;
+      color: var(--text);
+    }
+
+    .directory-count {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem 0.5rem 1rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .directory-container {
+      max-width: 1200px;
+      margin: 0.5rem auto 3rem auto;
+      padding: 0 1rem;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 2rem 0 1rem 0;
+      padding-bottom: 0.5rem;
+    }
+
+    .directory-subgrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .card.featured-card {
+      border-color: var(--accent);
+      background: #fffbeb;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background-color: #e2e8f0;
+    }
+
+    .card-content {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-header { margin-bottom: 0.75rem; }
+    .card-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+    .card-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); }
+    .price-badge { background: #e0e7ff; color: #3730a3; font-weight: 700; font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 6px; white-space: nowrap; }
+    .card-category { font-size: 0.8rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+    .card-subtypes { font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin-top: 0.25rem; }
+
+    .card-body { flex-grow: 1; font-size: 0.9rem; margin: 0.75rem 0; }
+    .card-info { margin-bottom: 0.4rem; color: #334155; }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      text-align: center;
+    }
+    .btn-primary { background-color: var(--primary); color: white; grid-column: span 2; }
+    .btn-secondary { background-color: #f1f5f9; color: #334155; border: 1px solid var(--border); }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.75);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+    .modal-content {
+      background: white;
+      max-width: 800px;
+      width: 100%;
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .close-modal {
+      position: absolute;
+      top: 1rem; right: 1.25rem;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .pricing-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+    }
+    .pricing-card.featured {
+      border-color: var(--accent);
+      background: #fffbeb;
+    }
+    .pricing-card .price { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0.5rem 0; }
+    .pricing-card ul { list-style: none; padding: 0; margin-bottom: 1.5rem; text-align: left; font-size: 0.9rem; }
+    .pricing-card ul li { margin-bottom: 0.4rem; padding-left: 1.2rem; position: relative; }
+    .pricing-card ul li::before { content: "✓"; color: #16a34a; position: absolute; left: 0; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="brand">Twin Cities</div>
+    <div class="nav-links">
+      <a onclick="openPricingModal()">List Business</a>
+      <a onclick="openPricingModal()">Pricing</a>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header>
+    <h1>Twin Cities Directory</h1>
+    <p>Your guide to verified local businesses & services in Rogers/Bentonville</p>
+  </header>
+
+  <!-- Banner -->
+  <div class="upgrade-banner">
+    <div class="banner-content">
+      <div class="banner-text">
+        <h3><span class="badge-urgent">Founders Club</span> Claim Your Spot ($179)</h3>
+        <p>Featured directory placement + guaranteed spot on our <strong>6x12 laminated postcard mailer to 2,500 homes</strong>!</p>
+      </div>
+      <button class="btn-upgrade" onclick="openPricingModal()">Claim Spot</button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="controls-container">
+    <input type="text" id="searchInput" placeholder="Search by name, service, or keyword...">
+    <select id="categoryFilter"><option value="">All Categories</option></select>
+    <select id="priceFilter">
+      <option value="">All Pricing Options</option>
+      <option value="$">$ (Budget Friendly)</option>
+      <option value="$$">$$ (Moderate / Standard)</option>
+      <option value="$$$">$$$ (Premium Service)</option>
+    </select>
+  </div>
+
+  <div class="directory-count" id="directoryCount">Loading directory...</div>
+
+  <!-- Directory Container -->
+  <main class="directory-container" id="directoryGrid"></main>
+
+  <!-- Pricing Modal -->
+  <div class="modal" id="pricingModal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closePricingModal()">&times;</span>
+      <h2 style="text-align: center; color: var(--primary);">Partner Packages</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h4>Standard Listing</h4>
+          <div class="price">Free</div>
+          <ul>
+            <li>Directory listing</li>
+            <li>Address & Phone</li>
+            <li>Google Maps link</li>
+          </ul>
+          <a href="mailto:info@hyperlocalnwa.com?subject=Free%20Listing" class="btn btn-secondary">Submit Listing</a>
+        </div>
+        <div class="pricing-card featured">
+          <h4>Founder Package</h4>
+          <div class="price">$179</div>
+          <ul>
+            <li>Top featured placement</li>
+            <li>Direct verified website link</li>
+            <li>Missed call/text back service (never miss a call or job again)</li>
+            <li>Review automation</li>
+            <li><strong>Special Offer (Next 10 businesses):</strong> Spot on our next 6x12 laminated postcard mailer to 2,500 homes in Rogers/Bentonville ($500 value)</li>
+          </ul>
+          <a href="https://cash.app/$HyperLocalNWA" target="_blank" class="btn btn-upgrade">Pay via Cash App ($179)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var restaurantImg = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600";
+    var windowImg = "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=600";
+    var pressureImg = "https://images.unsplash.com/photo-1558383331-f520f2888351?w=600";
+    var dentalImg = "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600";
+    var coffeeImg = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600";
+    var hotelImg = "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600";
+    var autoImg = "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=600";
+    var storeImg = "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600";
+    var hvacImg = "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=600";
+    var legalImg = "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600";
+
+    var allBusinesses = [
+      { name: "MoJoes Pressure Cleaning", category: "Pressure Washing", subtypes: "house washing, driveway & deck cleaning, gutter cleaning", address: "916 N 9th St", city: "Rogers", state: "AR", zip: "72756", phone: "479-903-2906", website: "https://mojoespressurewashing.com/", price: "$$", img: pressureImg, featured: true },
+      { name: "Hi Tech Enterprises", category: "Window Cleaning", subtypes: "residential window cleaning, dryer vent cleaning", address: "106 N Betsy Ln", city: "Rogers", state: "AR", zip: "72756", phone: "479-925-3314", website: "https://hitechnwa.com/", price: "$$", img: windowImg, featured: true },
+      { name: "Pinnacle Power Washing", category: "Pressure Washing", subtypes: "house washing, concrete & driveway cleaning", address: "2605 Storage Pkwy Ste 1", city: "Rogers", state: "AR", zip: "72756", phone: "479-366-9046", website: "", price: "$$", img: pressureImg },
+      { name: "NWA Mobile Detail", category: "Mobile Auto Detailing", subtypes: "interior/exterior detailing, ceramic coating", address: "1110 E Necessary Rd", city: "Rogers", state: "AR", zip: "72758", phone: "479-409-2003", website: "https://www.nwamobiledetail.com/", price: "$$", img: autoImg },
+      { name: "J & R Lawn Care of NWA", category: "Lawn Care", subtypes: "mowing, yard cleanup", address: "1102 N 24th St", city: "Rogers", state: "AR", zip: "72756", phone: "479-899-8099", website: "https://www.jrlawncarenwa.com/", price: "$$", img: storeImg },
+      { name: "Kings Lawn Care", category: "Lawn Care", subtypes: "lawn maintenance, edging", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0101", website: "https://kingslawncare.com/", price: "$$", img: storeImg },
+      { name: "The Lawn Specialist", category: "Lawn Care", subtypes: "lawn care, fertilization", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0102", website: "", price: "$$", img: storeImg },
+      { name: "Pinnacle Lawns, LLC", category: "Lawn Care", subtypes: "commercial & residential lawn care", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0103", website: "", price: "$$", img: storeImg },
+      { name: "PhD Junk Removal", category: "Junk Removal", subtypes: "furniture removal, cleanouts", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0104", website: "", price: "$$", img: storeImg },
+      { name: "Gutter Perfection", category: "Gutter Cleaning", subtypes: "gutter cleaning, repair", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0105", website: "https://nwagutterperfection.com/", price: "$$", img: pressureImg },
+      { name: "Southern Exterior", category: "Pressure Washing", subtypes: "exterior washing", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0106", website: "", price: "$$", img: pressureImg },
+      { name: "Gutter Boy", category: "Gutter Cleaning", subtypes: "gutter service", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0107", website: "", price: "$$", img: pressureImg },
+      { name: "Bonnie and a Broom - NWA Cleaning", category: "House Cleaning", subtypes: "residential cleaning", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0108", website: "", price: "$$", img: windowImg },
+      { name: "Molly Maid of Northwest Arkansas", category: "House Cleaning", subtypes: "maid service", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0109", website: "https://www.mollymaid.com", price: "$$", img: windowImg },
+      { name: "The Maids in Northwest Arkansas", category: "House Cleaning", subtypes: "professional house cleaning", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0110", website: "https://www.maids.com/319/", price: "$$", img: windowImg },
+      { name: "Blue Ribbon Outdoor", category: "Landscaping", subtypes: "outdoor living, landscaping", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0111", website: "https://www.blueribbonoutdoor.com/", price: "$$", img: storeImg },
+      { name: "Bradford Yard Living + Landscaping", category: "Landscaping", subtypes: "design, landscaping", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0112", website: "", price: "$$", img: storeImg },
+      { name: "Work for it Outdoors LLC", category: "Landscaping", subtypes: "outdoor maintenance", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0113", website: "", price: "$$", img: storeImg },
+      { name: "1st Impressions Lawn & Tree", category: "Lawn Care", subtypes: "tree & lawn service", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0114", website: "", price: "$$", img: storeImg },
+      { name: "Lombard Tree Service", category: "Tree Service", subtypes: "tree removal, trimming", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0115", website: "", price: "$$", img: storeImg },
+      { name: "A's Tree Service", category: "Tree Service", subtypes: "expert tree care", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0116", website: "https://www.astreeservicear.com/", price: "$$", img: storeImg },
+      { name: "Jose's Tree Service", category: "Tree Service", subtypes: "tree trimming", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0117", website: "", price: "$$", img: storeImg },
+      { name: "AnyTown Tree Service", category: "Tree Service", subtypes: "stump grinding", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0118", website: "", price: "$$", img: storeImg },
+      { name: "T&S Tree Service", category: "Tree Service", subtypes: "tree removal", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0119", website: "", price: "$$", img: storeImg },
+      { name: "Mary's Painting", category: "Painting Contractor", subtypes: "interior & exterior painting", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0120", website: "https://www.maryspainting.com/", price: "$$", img: storeImg },
+      { name: "Fence Guys", category: "Fence Installation", subtypes: "wood & metal fences", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0121", website: "", price: "$$", img: storeImg },
+      { name: "A. Reid Fencing & Repair", category: "Fence Installation", subtypes: "fence repair", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0122", website: "", price: "$$", img: storeImg },
+      { name: "Sawyer Fence", category: "Fence Installation", subtypes: "custom fencing", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0123", website: "", price: "$$", img: storeImg },
+      { name: "Garage Door Medic", category: "Garage Door Repair", subtypes: "garage door service", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0124", website: "https://www.thegaragedoormedics.com/", price: "$$", img: hvacImg },
+      { name: "Precision Door Service of Northwest Arkansas", category: "Garage Door Repair", subtypes: "springs, openers", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0125", website: "https://www.precisiondoor.net", price: "$$", img: hvacImg },
+      { name: "Elite Garage Door Services of Northwest Arkansas", category: "Garage Door Repair", subtypes: "repairs & installation", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0126", website: "https://elitegaragedoornwa.com/", price: "$$", img: hvacImg },
+      { name: "Sears Appliance Repair", category: "Appliance Repair", subtypes: "major appliance service", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0127", website: "https://www.searshomeservices.com", price: "$$", img: hvacImg },
+      { name: "Wizard Carpet Care & More", category: "Carpet Cleaning", subtypes: "steam cleaning", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0128", website: "https://www.wizardcleaners.com/", price: "$$", img: windowImg },
+      { name: "Legacy Rug Spa", category: "Carpet Cleaning", subtypes: "rug cleaning", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0129", website: "https://legacyrugspa.com/", price: "$$", img: windowImg },
+      { name: "Palisade Pest Control", category: "Pest Control", subtypes: "residential pest control", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0130", website: "https://palisadepest.com/", price: "$$", img: hvacImg },
+      { name: "Flex Pest Control", category: "Pest Control", subtypes: "extermination", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0131", website: "https://flexpestcontrol.com/", price: "$$", img: hvacImg },
+      { name: "NWA Bug Daddy", category: "Pest Control", subtypes: "pest management", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0132", website: "", price: "$$", img: hvacImg },
+      { name: "Ignite Chiropractic", category: "Chiropractor", subtypes: "adjustments", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0133", website: "", price: "$$", img: dentalImg },
+      { name: "Natural State Chiropractic", category: "Chiropractor", subtypes: "spinal care", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0134", website: "https://www.naturalstaterogers.com/", price: "$$", img: dentalImg },
+      { name: "Legacy Family Chiropractic", category: "Chiropractor", subtypes: "family wellness", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0135", website: "", price: "$$", img: dentalImg },
+      { name: "The Joint Chiropractic", category: "Chiropractor", subtypes: "routine care", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0136", website: "https://www.thejoint.com", price: "$$", img: dentalImg },
+      { name: "Integrated Medical", category: "Chiropractor", subtypes: "integrated health", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0137", website: "", price: "$$", img: dentalImg },
+      { name: "Curtis Realty Group", category: "Real Estate", subtypes: "buying & selling", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0138", website: "", price: "$$$", img: legalImg },
+      { name: "Limbird Real Estate Group", category: "Real Estate", subtypes: "real estate agents", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0139", website: "", price: "$$$", img: legalImg },
+      { name: "Lindsey & Associates Inc. - Rogers", category: "Real Estate", subtypes: "residential & commercial real estate", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0140", website: "https://www.lindsey.com/", price: "$$$", img: legalImg },
+      { name: "Brandi Mallard Team", category: "Real Estate", subtypes: "local agents", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0141", website: "", price: "$$$", img: legalImg },
+      { name: "Coldwell Banker Harris McHaney & Faucette", category: "Real Estate", subtypes: "real estate brokerage", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0142", website: "https://www.cbhmf.com", price: "$$$", img: legalImg },
+      { name: "Onyx Coffee Lab", category: "Coffee Shop", subtypes: "specialty coffee, roastery", address: "101 E Walnut St", city: "Rogers", state: "AR", zip: "72756", phone: "479-899-6750", website: "https://onyxcoffeelab.com/", price: "$$", img: coffeeImg, featured: true },
+      { name: "Un Deux Trois Cafe", category: "Coffee Shop", subtypes: "cafe & bakery", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0143", website: "https://undeuxtroiscafe.com/", price: "$$", img: coffeeImg },
+      { name: "Confident Coffee Roasters", category: "Coffee Shop", subtypes: "craft roasters", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0144", website: "https://www.confidentcoffeeroasters.com/", price: "$$", img: coffeeImg },
+      { name: "Iron Horse Coffee Company", category: "Coffee Shop", subtypes: "espresso bar", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0145", website: "https://www.ironhorsecoffee.net/", price: "$$", img: coffeeImg },
+      { name: "Sugar Llamas - Rogers", category: "Dessert Shop", subtypes: "donuts & coffee", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0146", website: "", price: "$", img: restaurantImg },
+      { name: "Parlor Doughnuts Rogers", category: "Donut Shop", subtypes: "layered doughnuts", address: "5400 S Pinnacle Hills Pkwy", city: "Rogers", state: "AR", zip: "72758", phone: "479-278-4546", website: "https://www.parlordoughnuts.com", price: "$", img: restaurantImg },
+      { name: "Cronuts Donuts", category: "Donut Shop", subtypes: "pastries", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0147", website: "", price: "$", img: restaurantImg },
+      { name: "Hello Donuts", category: "Donut Shop", subtypes: "fresh donuts", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0148", website: "", price: "$", img: restaurantImg },
+      { name: "Treasure Massage", category: "Massage Therapist", subtypes: "therapeutic massage", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0149", website: "https://treasuremassage.business.site/", price: "$$", img: dentalImg },
+      { name: "Diamond Massage LLC", category: "Massage Therapist", subtypes: "massage therapy", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0150", website: "", price: "$$", img: dentalImg },
+      { name: "The Best Massage", category: "Massage Therapist", subtypes: "relaxation massage", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0151", website: "https://thebestmassage-ar.business.site/", price: "$$", img: dentalImg },
+      { name: "Squeeze Massage - Rogers", category: "Massage Therapist", subtypes: "custom massage", address: "4600 S Pinnacle Hills Pkwy", city: "Rogers", state: "AR", zip: "72758", phone: "479-847-1472", website: "", price: "$$$", img: dentalImg },
+      { name: "Revive Medical Spa, LLC Rogers", category: "Med Spa", subtypes: "skin care, aesthetics", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0152", website: "", price: "$$$", img: dentalImg },
+      { name: "Renew Aesthetics", category: "Med Spa", subtypes: "injectables, laser treatments", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0153", website: "", price: "$$$", img: dentalImg },
+      { name: "Emerald Aesthetics, Wellness, and Direct Primary Care", category: "Med Spa", subtypes: "wellness & primary care", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0154", website: "", price: "$$$", img: dentalImg },
+      { name: "NWA Aesthetics and Fertility", category: "Med Spa", subtypes: "specialized care", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0155", website: "", price: "$$$", img: dentalImg },
+      { name: "Sit Means Sit Dog Training - Northwest Arkansas", category: "Dog Training", subtypes: "obedience training", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0156", website: "", price: "$$", img: storeImg },
+      { name: "Paws 'n' Rec - New Hope", category: "Pet Boarding & Grooming", subtypes: "dog boarding & daycare", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0157", website: "https://www.pawsnrec.com/location/arkansas/new-hope/", price: "$$", img: storeImg },
+      { name: "K9 Resorts Luxury Pet Hotel Rogers", category: "Pet Boarding", subtypes: "luxury pet lodging", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0158", website: "https://www.k9resorts.com/rogers/", price: "$$$", img: storeImg },
+      { name: "Flow Real Estate Photography - Northwest Arkansas", category: "Photographer", subtypes: "real estate media", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0159", website: "", price: "$$", img: storeImg },
+      { name: "Angela Blake Studios", category: "Photographer", subtypes: "portrait & event photography", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0160", website: "", price: "$$", img: storeImg },
+      { name: "Novo Studio", category: "Photographer", subtypes: "commercial photography", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0161", website: "", price: "$$", img: storeImg },
+      { name: "Eriks Photography", category: "Photographer", subtypes: "wedding photography", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0162", website: "", price: "$$", img: storeImg },
+      { name: "Freedom Boudoir by Freedom Dreamer Photography", category: "Photographer", subtypes: "boudoir sessions", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0163", website: "", price: "$$", img: storeImg },
+      { name: "Kinty Jones Heating & Cooling", category: "HVAC", subtypes: "AC & heating service", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0164", website: "https://kintyjones.com/", price: "$$", img: hvacImg },
+      { name: "Pure Comfort Heating, Cooling, Electrical & Plumbing", category: "HVAC", subtypes: "full service home comfort", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0165", website: "https://purecomfortnwa.com/", price: "$$", img: hvacImg },
+      { name: "NWA Cooling & Heating", category: "HVAC", subtypes: "repair & install", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0166", website: "", price: "$$", img: hvacImg },
+      { name: "Kinder Heating and Air", category: "HVAC", subtypes: "hvac maintenance", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0167", website: "", price: "$$", img: hvacImg },
+      { name: "George's Hometown Heat and Air", category: "HVAC", subtypes: "heating and cooling", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0168", website: "", price: "$$", img: hvacImg },
+      { name: "Town & Country Plumbing", category: "Plumbing", subtypes: "plumbing repairs", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0169", website: "", price: "$$", img: hvacImg },
+      { name: "All Calls Plumbing LLC", category: "Plumbing", subtypes: "emergency plumbing", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0170", website: "https://www.allcallsplumbing.com/", price: "$$", img: hvacImg },
+      { name: "Kinty Jones Plumbing", category: "Plumbing", subtypes: "residential plumbing", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0171", website: "", price: "$$", img: hvacImg },
+      { name: "Benjamin Franklin Plumbing of Rogers", category: "Plumbing", subtypes: "reliable plumbing", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0172", website: "https://www.benjaminfranklinplumbing.com", price: "$$", img: hvacImg },
+      { name: "Mr. Electric of Rogers", category: "Electrician", subtypes: "electrical repairs & installation", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0173", website: "https://www.mrelectric.com", price: "$$", img: hvacImg },
+      { name: "It's Electric", category: "Electrician", subtypes: "residential electrical", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0174", website: "", price: "$$", img: hvacImg },
+      { name: "Dynamis Electric", category: "Electrician", subtypes: "commercial & residential", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0175", website: "", price: "$$", img: hvacImg },
+      { name: "Toro Construction Roofing & Restoration", category: "Roofing", subtypes: "storm damage & roofing", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0176", website: "", price: "$$$", img: hvacImg },
+      { name: "Leak Solutions & Roofing", category: "Roofing", subtypes: "leak repair", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0177", website: "", price: "$$$", img: hvacImg },
+      { name: "Basey's Roofing", category: "Roofing", subtypes: "roof replacement", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0178", website: "", price: "$$$", img: hvacImg },
+      { name: "Bravo Roofing", category: "Roofing", subtypes: "commercial & residential roofing", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0179", website: "", price: "$$$", img: hvacImg },
+      { name: "NWA Roofing", category: "Roofing", subtypes: "local roofers", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0180", website: "https://www.nwa-roofing.com/", price: "$$$", img: hvacImg },
+      { name: "Barbers Paradise", category: "Barbershop", subtypes: "mens haircuts", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0181", website: "", price: "$", img: storeImg },
+      { name: "Scissor Theory Barbershop", category: "Barbershop", subtypes: "modern cuts & shaves", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0182", website: "https://www.scissortheory.com/", price: "$$", img: storeImg },
+      { name: "V's Barbershop - Rogers", category: "Barbershop", subtypes: "classic barbershop experience", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0183", website: "https://vbarbershop.com/pages/location/rogers", price: "$$", img: storeImg },
+      { name: "Culture Cuts Barbershop", category: "Barbershop", subtypes: "fades & styling", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0184", website: "", price: "$", img: storeImg },
+      { name: "D1 Training Rogers", category: "Gym / Personal Training", subtypes: "athletic training", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0185", website: "https://d1training.com/facility/rogers", price: "$$$", img: storeImg },
+      { name: "CHOP Barbell", category: "Gym", subtypes: "strength training", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0186", website: "https://chopbarbell.com/", price: "$$", img: storeImg },
+      { name: "SISU Performance & Training", category: "Gym", subtypes: "fitness & conditioning", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0187", website: "", price: "$$", img: storeImg },
+      { name: "Alloy Personal Training Pinnacle Hills", category: "Gym / Personal Training", subtypes: "small group personal training", address: "Rogers", city: "Rogers", state: "AR", zip: "72758", phone: "479-555-0188", website: "https://alloypersonaltraining.com/location/pinnacle-hills-ar/", price: "$$$", img: storeImg },
+      { name: "R-Keys Lock & Safe Services", category: "Locksmith", subtypes: "lockouts & safes", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0189", website: "", price: "$$", img: autoImg },
+      { name: "B2 Moving", category: "Moving Company", subtypes: "local moving", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0190", website: "https://www.b2moving.com/rogers.html", price: "$$$", img: storeImg },
+      { name: "All My Brothers Moving Company Rogers", category: "Moving Company", subtypes: "residential movers", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0191", website: "", price: "$$$", img: storeImg },
+      { name: "Razorback Moving LLC", category: "Moving Company", subtypes: "professional movers", address: "Rogers", city: "Rogers", state: "AR", zip: "72756", phone: "479-555-0192", website: "", price: "$$$", img: storeImg },
+      // New listings from the CSV file
+      { name: "Straightline Automotive", category: "Automotive Repair Shop", subtypes: "Auto Repair, Tire Shop, Maintenance", address: "9141 Greenhouse Rd", city: "Centerton", state: "AR", zip: "72719", phone: "(479) 715-6565", website: "https://straightlinenwa.com", price: "$$", img: autoImg },
+      { name: "Ozark Mountain Roofing", category: "Roofing Service", subtypes: "Roofing Contractor, Home Improvement", address: "201 Greenhouse Rd", city: "Centerton", state: "AR", zip: "72719", phone: "(479) 271-8187", website: "https://ozmountain.com", price: "$$$", img: hvacImg },
+      { name: "NWA Fence", category: "Contractor", subtypes: "Fence Contractor, Gate Supply", address: "Servicing NWA Area", city: "Centerton", state: "AR", zip: "72719", phone: "(479) 426-2424", website: "https://nwafnc.com", price: "$$", img: storeImg },
+      { name: "Absolute Moving NWA", category: "Moving & Storage", subtypes: "Local Moving, Relocation Services", address: "Northwest Arkansas", city: "Bentonville", state: "AR", zip: "72712", phone: "(479) 790-8109", website: "https://www.facebook.com/absolutemovingnwa", price: "$$$", img: storeImg },
+      { name: "Local Handyman NWA", category: "Handyman Service", subtypes: "Home Repair, Maintenance", address: "Northwest Arkansas", city: "Fayetteville", state: "AR", zip: "72701", phone: "(479) 349-6949", website: "https://www.facebook.com/localhandymannwarkansas", price: "$$", img: hvacImg },
+      { name: "Greathouse RR Fence", category: "Contractor", subtypes: "Fence Installation, Farm & Ranch Fencing", address: "Northwest Arkansas", city: "Springdale", state: "AR", zip: "72762", phone: "(620) 228-4814", website: "http://greathouserrfence.com", price: "$$", img: storeImg }
+    ];
+
+    // Populate Category Dropdown
+    var categoryFilter = document.getElementById('categoryFilter');
+    var priceFilter = document.getElementById('priceFilter');
+    var catMap = {};
+
+    for (var i = 0; i < allBusinesses.length; i++) {
+      catMap[allBusinesses[i].category] = true;
+    }
+    
+    Object.keys(catMap).sort().forEach(function(cat) {
+      var opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat;
+      categoryFilter.appendChild(opt);
+    });
+
+    // Helper to create a business card element with safe link fallback
+    function createCard(item, isFeatured) {
+      var card = document.createElement('div');
+      card.className = 'card' + (isFeatured ? ' featured-card' : '');
+
+      var fullAddress = item.address + ", " + item.city + ", " + item.state + " " + item.zip;
+      var imageSrc = item.img || 'https://upload.wikimedia.org/wikipedia/commons/b/b7/Rogers%2C_AR_001.jpg';
+      var mapUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(item.name + " " + item.city + " " + item.state);
+      var reviewUrl = "https://www.google.com/search?q=" + encodeURIComponent(item.name + " " + item.city + " " + item.state + " reviews");
+      
+      var websiteUrl = item.website ? item.website : ("https://www.google.com/search?q=" + encodeURIComponent(item.name + " " + item.city + " " + item.state));
+
+      card.innerHTML = 
+        '<img src="' + imageSrc + '" alt="' + item.name + '" class="card-img">' +
+        '<div class="card-content">' +
+          '<div class="card-header">' +
+            '<div class="card-category">' + item.category + (isFeatured ? ' • <span style="color:var(--accent);">Founding Partner</span>' : '') + '</div>' +
+            '<div class="card-title-row">' +
+              '<div class="card-title">' + item.name + '</div>' +
+              (item.price ? '<span class="price-badge">' + item.price + '</span>' : '') +
+            '</div>' +
+            (item.subtypes ? '<div class="card-subtypes">' + item.subtypes + '</div>' : '') +
+          '</div>' +
+          '<div class="card-body">' +
+            '<div class="card-info"><strong>📍 Address:</strong> ' + fullAddress + '</div>' +
+            '<div class="card-info"><strong>📞 Phone:</strong> <a href="tel:' + item.phone + '">' + item.phone + '</a></div>' +
+          '</div>' +
+          '<div class="card-actions">' +
+            '<a href="' + websiteUrl + '" target="_blank" rel="noopener" class="btn btn-primary">Visit Website</a>' +
+            '<a href="' + mapUrl + '" target="_blank" rel="noopener" class="btn btn-secondary">Map & Directions</a>' +
+            '<a href="' + reviewUrl + '" target="_blank" rel="noopener" class="btn btn-secondary">Google Reviews</a>' +
+          '</div>' +
+        '</div>';
+
+      return card;
+    }
+
+    // Render Directory grouped by Featured and Categories
+    function renderDirectory(data) {
+      var container = document.getElementById('directoryGrid');
+      var countEl = document.getElementById('directoryCount');
+      container.innerHTML = '';
+
+      countEl.textContent = "Showing " + data.length + " local businesses";
+
+      if (data.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 2rem;">No matching businesses found.</div>';
+        return;
+      }
+
+      var featuredItems = data.filter(function(b) { return b.featured; });
+      var categories = {};
+
+      data.forEach(function(item) {
+        if (!categories[item.category]) {
+          categories[item.category] = [];
+        }
+        categories[item.category].push(item);
+      });
+
+      // 1. Render Featured Section at the top
+      if (featuredItems.length > 0) {
+        var featuredSection = document.createElement('div');
+        featuredSection.innerHTML = '<h2 class="section-title" style="color: var(--accent);">⭐ Featured Founding Partners</h2>';
+        
+        var featuredGrid = document.createElement('div');
+        featuredGrid.className = 'directory-subgrid';
+        featuredGrid.style.marginBottom = '2.5rem';
+
+        featuredItems.forEach(function(item) {
+          featuredGrid.appendChild(createCard(item, true));
+        });
+
+        featuredSection.appendChild(featuredGrid);
+        container.appendChild(featuredSection);
+      }
+
+      // 2. Render Category Sections
+      Object.keys(categories).sort().forEach(function(cat) {
+        var catSection = document.createElement('div');
+        catSection.innerHTML = '<h2 class="section-title" style="color: var(--primary); border-bottom: 2px solid var(--border);">' + cat + '</h2>';
+
+        var catGrid = document.createElement('div');
+        catGrid.className = 'directory-subgrid';
+        catGrid.style.marginBottom = '2rem';
+
+        categories[cat].forEach(function(item) {
+          catGrid.appendChild(createCard(item, item.featured));
+        });
+
+        catSection.appendChild(catGrid);
+        container.appendChild(catSection);
+      });
+    }
+
+    // Filter Logic
+    function filterData() {
+      var searchVal = document.getElementById('searchInput').value.toLowerCase();
+      var selectedCat = categoryFilter.value;
+      var selectedPrice = priceFilter.value;
+
+      var filtered = allBusinesses.filter(function(b) {
+        var matchesSearch = 
+          b.name.toLowerCase().indexOf(searchVal) !== -1 ||
+          b.category.toLowerCase().indexOf(searchVal) !== -1 ||
+          (b.subtypes && b.subtypes.toLowerCase().indexOf(searchVal) !== -1) ||
+          b.address.toLowerCase().indexOf(searchVal) !== -1;
+
+        var matchesCat = !selectedCat || b.category === selectedCat;
+        var matchesPrice = !selectedPrice || b.price === selectedPrice;
+
+        return matchesSearch && matchesCat && matchesPrice;
+      });
+
+      renderDirectory(filtered);
+    }
+
+    // Modal Controls
+    function openPricingModal() {
+      document.getElementById('pricingModal').style.display = 'flex';
+    }
+
+    function closePricingModal() {
+      document.getElementById('pricingModal').style.display = 'none';
+    }
+
+    // Attach Listeners
+    document.getElementById('searchInput').addEventListener('input', filterData);
+    categoryFilter.addEventListener('change', filterData);
+    priceFilter.addEventListener('change', filterData);
+
+    // Initial render
+    renderDirectory(allBusinesses);
+  </script>
+</body>
+</html>
+
